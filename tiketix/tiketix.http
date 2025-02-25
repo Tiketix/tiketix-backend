@@ -1,0 +1,6 @@
+@tiketix_HostAddress = http://localhost:5296
+
+GET {{tiketix_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
