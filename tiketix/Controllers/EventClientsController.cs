@@ -32,7 +32,7 @@ namespace tiketix.Controllers
             return Ok(eventClient);
         }
 
-        [HttpGet]
+    [HttpGet]
     public async Task<IActionResult> GetAllEventClients()
     {
         var eventClients = await _eventClientServices.GetAllEventClientsAsync();
@@ -47,19 +47,71 @@ namespace tiketix.Controllers
         return Ok(eventClient);
     }
 
+
     [HttpPut]
-    [Route("update-by-email")]
-    public async Task<IActionResult> UpdateEventClient(string email, UpdateEventClientDto updateEventClientDto)
+    [Route("update-email")]
+    public async Task<IActionResult> UpdateClientEmail(string email, UpdateClientEmailDto updateClientEmailDto)
     {
-        var eventClient = await _eventClientServices.UpdateEventClientAsync(email, updateEventClientDto);
+        var eventClient = await _eventClientServices.UpdateClientEmailAsync(email, updateClientEmailDto);
 
         if (eventClient is null)
         {
-            return NotFound("Client was not found");
+            return NotFound("E-mail does not exist");
         }
+
+        //ask for password or ask to login to confirm
 
         return Ok(eventClient);
     }
+
+    [HttpPut]
+    [Route("update-name")]
+    public async Task<IActionResult> UpdateClientName(string email, UpdateClientNameDto updateClientNameDto)
+    {
+        var eventClient = await _eventClientServices.UpdateClientNameAsync(email, updateClientNameDto);
+
+        if (eventClient is null)
+        {
+            return NotFound("E-mail does not exist");
+        }
+
+        //ask for password or ask to login to confirm
+
+        return Ok(eventClient);
+    }
+
+    [HttpPut]
+    [Route("update-phone")]
+    public async Task<IActionResult> UpdateClientPhone(string email, UpdateClientPhoneDto updateClientPhoneDto)
+    {
+        var eventClient = await _eventClientServices.UpdateClientPhoneAsync(email, updateClientPhoneDto);
+
+        if (eventClient is null)
+        {
+            return NotFound("E-mail does not exist");
+        }
+
+        //ask for password or ask to login to confirm
+
+        return Ok(eventClient);
+    }
+
+    [HttpPut]
+    [Route("update-password")]
+    public async Task<IActionResult> ChangePassword(string email, ChangePasswordDto changePasswordDto)
+    {
+        var eventClient = await _eventClientServices.ChangePasswordAsync(email, changePasswordDto);
+
+        if (eventClient is null)
+        {
+            return NotFound("E-mail does not exist");
+        }
+
+        //ask for password or ask to login to confirm
+
+        return Ok(eventClient);
+    }
+
 
     [HttpDelete]
     [Route("delete")]

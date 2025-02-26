@@ -40,9 +40,9 @@ public class EventClientServices : IEventClientServices
         return eventClientEntity;
     }
 
-    public async Task<EventClient> UpdateEventClientAsync(string email, UpdateEventClientDto updateEventClientDto)
+
+    public async Task<EventClient> UpdateClientEmailAsync(string email, UpdateClientEmailDto updateClientEmailDto)
     {
-        //var eventClient = await _dbContext.EventClients.FindAsync(email);
         var eventClient = await _dbContext.EventClients.FirstOrDefaultAsync(c => c.Email == email);
 
         if (eventClient == null)
@@ -51,11 +51,59 @@ public class EventClientServices : IEventClientServices
             return null;
         }
 
-        eventClient.FirstName = updateEventClientDto.FirstName;
-        eventClient.LastName = updateEventClientDto.LastName;
-        eventClient.Email = updateEventClientDto.Email;
-        eventClient.Phone = updateEventClientDto.Phone;
-        eventClient.Password = updateEventClientDto.Password;
+        eventClient.Email = updateClientEmailDto.Email;
+
+        await _dbContext.SaveChangesAsync();
+
+        return eventClient;
+    }
+
+    public async Task<EventClient> UpdateClientNameAsync(string email, UpdateClientNameDto updateClientNameDto)
+    {
+        var eventClient = await _dbContext.EventClients.FirstOrDefaultAsync(c => c.Email == email);
+
+        if (eventClient == null)
+        {
+        #pragma warning disable CS8603 // Possible null reference return.
+            return null;
+        }
+
+        eventClient.FirstName = updateClientNameDto.FirstName;
+        eventClient.LastName = updateClientNameDto.LastName;
+
+        await _dbContext.SaveChangesAsync();
+
+        return eventClient;
+    }
+
+    public async Task<EventClient> UpdateClientPhoneAsync(string email, UpdateClientPhoneDto updateClientPhoneDto)
+    {
+        var eventClient = await _dbContext.EventClients.FirstOrDefaultAsync(c => c.Email == email);
+
+        if (eventClient == null)
+        {
+        #pragma warning disable CS8603 // Possible null reference return.
+            return null;
+        }
+
+        eventClient.Phone = updateClientPhoneDto.Phone;
+
+        await _dbContext.SaveChangesAsync();
+
+        return eventClient;
+    }
+
+    public async Task<EventClient> ChangePasswordAsync(string email, ChangePasswordDto changePasswordDto)
+    {
+        var eventClient = await _dbContext.EventClients.FirstOrDefaultAsync(c => c.Email == email);
+
+        if (eventClient == null)
+        {
+        #pragma warning disable CS8603 // Possible null reference return.
+            return null;
+        }
+
+        eventClient.Password = changePasswordDto.Password;
 
         await _dbContext.SaveChangesAsync();
 

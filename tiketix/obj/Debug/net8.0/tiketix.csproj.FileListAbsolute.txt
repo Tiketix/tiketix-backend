@@ -143,3 +143,5 @@ C:\Users\teesa\Desktop\tiketix\tiketix\bin\Debug\net8.0\runtimes\win\lib\net6.0\
 C:\Users\teesa\Desktop\tiketix\tiketix\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\teesa\Desktop\tiketix\tiketix\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\Users\teesa\Desktop\tiketix\tiketix\obj\Debug\net8.0\tiketix.sourcelink.json
+C:\Users\teesa\Desktop\tiketix\tiketix\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\teesa\Desktop\tiketix\tiketix\bin\Debug\net8.0\Microsoft.Bcl.Memory.dll
