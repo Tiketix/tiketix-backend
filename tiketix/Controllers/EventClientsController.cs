@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using tiketix.Data;
 using tiketix.Models;
-using tiketix.Models.Entities;
+
 
 namespace tiketix.Controllers
 {
@@ -12,87 +10,93 @@ namespace tiketix.Controllers
 
     public class EventClientsController : ControllerBase
     {
-        private readonly AppDbContext dbContext;
+        private readonly IEventClientServices _eventClientServices;
 
-        public EventClientsController(AppDbContext dbContext)
-        {
-            this.dbContext = dbContext;
-        }
-        [HttpGet]
-        public IActionResult GetAllEventClients()
-        {
-            return Ok(dbContext.EventClients.ToList());
-        }
-
-        [HttpGet]
-        [Route("{id:Guid}")]
-        public IActionResult GetEventClientById(Guid id) 
-        {
-            var eventClient = dbContext.EventClients.Find(id);
-
-            if (eventClient is null)
-            {
-                return NotFound("Client does not exist");
-            }
-
-            return Ok(eventClient);
-        }
-     
-        [HttpPost]
-        public IActionResult AddEventClient(AddEventClientDto addEventClientDto)
-        {
-            var eventClientEntity = new EventClient()
-            {
-                FirstName = addEventClientDto.FirstName,
-                LastName = addEventClientDto.LastName,
-                Phone = addEventClientDto.Phone,
-                Email = addEventClientDto.Email,
-                Password = addEventClientDto.Password
-            };
-
-            dbContext.EventClients.Add(eventClientEntity);
-            dbContext.SaveChanges();
-
-            return Ok(eventClientEntity);
-        }
-
-        [HttpPut]
-        [Route("{id:Guid}")]
-        public IActionResult UpdateEventClient(Guid id, UpdateEventClientDto updateEventClientDto)
-        {
-            var eventClient = dbContext.EventClients.Find(id);
-
-            if (eventClient is null)
-            {
-                return NotFound("Client was not found");
-            }
-
-            eventClient.FirstName = updateEventClientDto.FirstName;
-            eventClient.LastName = updateEventClientDto.LastName;
-            eventClient.Email = updateEventClientDto.Email;
-            eventClient.Phone = updateEventClientDto.Phone;
-            eventClient.Password = updateEventClientDto.Password;
-
-            dbContext.SaveChanges();
-
-            return Ok(eventClient);
-        }
-
-        [HttpDelete]
-        [Route("{id:Guid}")]
-        public IActionResult DeleteEventClient(Guid id)
-        {
-            var eventClient = dbContext.EventClients.Find(id);
-
-            if (eventClient is null)
-            {
-                return NotFound("Client not found");
-            }
-
-            dbContext.EventClients.Remove(eventClient);
-            dbContext.SaveChanges();
-
-            return Ok("Deleted Successfully");
-        }
+        public EventClientsController(IEventClientServices eventClientServices)
+    {
+        _eventClientServices = eventClientServices;
     }
+
+
+        [HttpGet]
+        [Route("by-email")]
+        public async Task<IActionResult> GetEventClientByEmail([FromQuery] string email) 
+        {
+            var eventClient = await _eventClientServices.GetEventClientByEmailAsync(email);
+
+            if (eventClient is null)
+            {
+                return NotFound("Client with this email does not exist");
+            }
+
+            return Ok(eventClient);
+        }
+
+        [HttpGet]
+    public async Task<IActionResult> GetAllEventClients()
+    {
+        var eventClients = await _eventClientServices.GetAllEventClientsAsync();
+        return Ok(eventClients);
+    }
+    
+
+    [HttpPost]
+    public async Task<IActionResult> AddEventClient(AddEventClientDto addEventClientDto)
+    {
+        var eventClient = await _eventClientServices.AddEventClientAsync(addEventClientDto);
+        return Ok(eventClient);
+    }
+
+    [HttpPut]
+    [Route("update-by-email")]
+    public async Task<IActionResult> UpdateEventClient(string email, UpdateEventClientDto updateEventClientDto)
+    {
+        var eventClient = await _eventClientServices.UpdateEventClientAsync(email, updateEventClientDto);
+
+        if (eventClient is null)
+        {
+            return NotFound("Client was not found");
+        }
+
+        return Ok(eventClient);
+    }
+
+    [HttpDelete]
+    [Route("delete")]
+    public async Task<IActionResult> DeleteEventClient(string email)
+    {
+        var result = await _eventClientServices.DeleteEventClientAsync(email);
+
+        if (!result)
+        {
+            return NotFound("Client not found");
+        }
+
+        return Ok("Deleted Successfully");
+    }
+    
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto loginDto)
+    {
+        var eventClient = await _eventClientServices.AuthenticateAsync(loginDto.Email, loginDto.Password);
+        
+        if (eventClient == null)
+        {
+            return Unauthorized("Invalid email or password");
+        }
+        
+        // Authentication successful
+        // Create a response without including sensitive information
+        var response = new
+        {
+            eventClient.Id,
+            eventClient.Email,
+            eventClient.FirstName,
+            eventClient.LastName
+        };
+        
+        return Ok(response);
+    }
+}
 }
