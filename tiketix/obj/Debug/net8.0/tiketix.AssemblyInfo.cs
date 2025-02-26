@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("tiketix")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e9e30c7701d5b17ee232d78cbdb0be2f39fc2568")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9e2e6bcc0462f6b3c9c9d1159af143323885ceb8")]
 [assembly: System.Reflection.AssemblyProductAttribute("tiketix")]
 [assembly: System.Reflection.AssemblyTitleAttribute("tiketix")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

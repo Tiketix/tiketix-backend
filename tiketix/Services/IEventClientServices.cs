@@ -14,4 +14,5 @@ public interface IEventClientServices
     Task<bool> DeleteEventClientAsync(string email);
 
     Task<EventClient> AuthenticateAsync(string email, string password);
+    object GenerateJwtToken(EventClient eventClient);
 }

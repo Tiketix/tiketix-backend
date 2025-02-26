@@ -33,6 +33,7 @@ namespace tiketix.Controllers
         }
 
     [HttpGet]
+    [Route("all-clients")]
     public async Task<IActionResult> GetAllEventClients()
     {
         var eventClients = await _eventClientServices.GetAllEventClientsAsync();
@@ -41,6 +42,7 @@ namespace tiketix.Controllers
     
 
     [HttpPost]
+    [Route("register")]
     public async Task<IActionResult> AddEventClient(AddEventClientDto addEventClientDto)
     {
         var eventClient = await _eventClientServices.AddEventClientAsync(addEventClientDto);
@@ -137,15 +139,23 @@ namespace tiketix.Controllers
         {
             return Unauthorized("Invalid email or password");
         }
+
+        // Generate JWT token
+        var token = _eventClientServices.GenerateJwtToken(eventClient);
+    
         
         // Authentication successful
-        // Create a response without including sensitive information
+        // Create a response without including sensitive information and return token
         var response = new
         {
-            eventClient.Id,
-            eventClient.Email,
-            eventClient.FirstName,
-            eventClient.LastName
+            Token = token,
+            User = new
+            {
+                eventClient.Id,
+                eventClient.Email,
+                eventClient.FirstName,
+                eventClient.LastName
+            }
         };
         
         return Ok(response);

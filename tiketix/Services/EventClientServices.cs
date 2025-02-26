@@ -1,4 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using tiketix.Data;
 using tiketix.Models;
 using tiketix.Models.Entities;
@@ -6,10 +10,38 @@ using tiketix.Models.Entities;
 public class EventClientServices : IEventClientServices
 {
     private readonly AppDbContext _dbContext;
+    private readonly IConfiguration _configuration;
     
-    public EventClientServices(AppDbContext dbContext)
+    public EventClientServices(AppDbContext dbContext, IConfiguration configuration)
     {
         _dbContext = dbContext;
+        _configuration = configuration;
+    }
+
+    // Method to generate JWT tokens
+    public string GenerateJwtToken(EventClient eventClient)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+            
+        #pragma warning disable CS8604 // Possible null reference argument.
+        var key = Encoding.ASCII.GetBytes(_configuration["JwtConfig:Key"]);
+
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                //new Claim(ClaimTypes.NameIdentifier, eventClient.Id.ToString()),
+                new Claim(ClaimTypes.Email, eventClient.Email)
+            }),
+            Expires = DateTime.UtcNow.AddMinutes(7),
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key), 
+                SecurityAlgorithms.HmacSha256Signature)
+        };
+        
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
     
     public async Task<EventClient> GetEventClientByEmailAsync(string email)
@@ -143,7 +175,12 @@ public class EventClientServices : IEventClientServices
         return eventClient;
     }
 
-    
+        object IEventClientServices.GenerateJwtToken(EventClient eventClient)
+        {
+            return GenerateJwtToken(eventClient);
+        }
+
+
     // Implement other methods as needed
 
 

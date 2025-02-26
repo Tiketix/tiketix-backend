@@ -1,5 +1,8 @@
 //using static Microsoft.AspNetCore.Http.StatusCodes;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using tiketix.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +11,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IEventClientServices, EventClientServices>();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        #pragma warning disable CS8604 // Possible null reference argument.
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"])),
+            ValidateIssuer = true,
+            ValidateAudience = true
+        };
+    });
+    
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
